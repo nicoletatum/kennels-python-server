@@ -86,6 +86,6 @@ def update_animal(id, new_animal):
     # you can access the index value of each item.
     for index, animal in enumerate(ANIMALS):
         if animal["id"] == id:
-            # Found the animal. Update the value.
+            # Found the animal. Update the value if changed
             ANIMALS[index] = new_animal
             break
