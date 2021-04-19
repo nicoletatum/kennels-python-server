@@ -50,7 +50,7 @@ def create_animal(animal):
 
 
 def get_all_animals():
-        # Open a connection to the database
+    # Open a connection to the database
     with sqlite3.connect("./kennel.db") as conn:
 
         # Just use these. It's a Black Box.
@@ -92,19 +92,63 @@ def get_all_animals():
     return json.dumps(animals)
 
 
-# def get_single_animal(id):
-#     # Variable to hold the found animal, if it exists
-#     requested_animal = None
+def get_animals_by_location(location):
 
-#     # Iterate the ANIMALS list above. Very similar to the
-#     # for..of loops you used in JavaScript.
-#     for animal in ANIMALS:
-#         # Dictionaries in Python use [] notation to find a key
-#         # instead of the dot notation that JavaScript used.
-#         if animal["id"] == id:
-#             requested_animal = animal
+    with sqlite3.connect("./kennel.db") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
 
-#     return requested_animal
+        # Write the SQL query to get the information you want
+        db_cursor.execute("""
+        select
+            a.id,
+            a.name,
+            a.breed,
+            a.status,
+            a.location_id,
+            a.customer_id
+        FROM Animal a
+        WHERE a.location_id = ?
+        """, (location, ))
+
+        animals = []
+        dataset = db_cursor.fetchall()
+
+        for row in dataset:
+            animal = Animal(row['id'], row['name'], row['breed'], row['status'],
+                            row['location_id'], row['customer_id'])
+            animals.append(animal.__dict__)
+
+    return json.dumps(animals)
+
+
+def get_animals_by_status(status):
+    with sqlite3.connect("./kennel.db") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        db_cursor.execute("""
+        SELECT
+            a.id,
+            a.name,
+            a.breed,
+            a.status,
+            a.location_id,
+            a.customer_id
+        FROM Animal a
+        WHERE a.status = ?
+        """, (status, ))
+
+        animals = []
+        dataset = db_cursor.fetchall()
+
+        for row in dataset:
+            animal = Animal(row['id'], row['name'], row['breed'], row['status'],
+                            row['location_id'], row['customer_id'])
+            animals.append(animal.__dict__)
+
+    return json.dumps(animals)
+
 
 def get_single_animal(id):
     with sqlite3.connect("./kennel.db") as conn:
@@ -121,17 +165,17 @@ def get_single_animal(id):
             a.status,
             a.location_id,
             a.customer_id
-        FROM animal a
+        FROM Animal a
         WHERE a.id = ?
-        """, ( id, ))
+        """, (id, ))
 
         # Load the single result into memory
         data = db_cursor.fetchone()
 
         # Create an animal instance from the current row
         animal = Animal(data['id'], data['name'], data['breed'],
-                            data['status'], data['location_id'],
-                            data['customer_id'])
+                        data['status'], data['location_id'],
+                        data['customer_id'])
 
         return json.dumps(animal.__dict__)
 
