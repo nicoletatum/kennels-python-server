@@ -1,10 +1,9 @@
-from customers.request import delete_customer, update_customer
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from animals import get_all_animals, get_single_animal, create_animal, delete_animal, update_animal, get_animals_by_location
-from employees import get_all_employees, get_single_employee, create_employee, delete_employee, update_employee
-from locations import get_all_locations, get_single_location, create_location, delete_location, update_location
-from customers import get_all_customers, get_customers_by_email, get_single_customer, create_customer, delete_customer, update_customer
+from animals.request import get_all_animals, get_single_animal, create_animal, delete_animal, update_animal, get_animals_by_location, get_animals_by_status
+from employees.request import get_all_employees, get_single_employee, create_employee, delete_employee, update_employee, get_employees_by_location
+from locations.request import get_all_locations, get_single_location, create_location, delete_location, update_location
+from customers.request import get_all_customers, get_customers_by_email, get_single_customer, create_customer, delete_customer, update_customer
 # Here's a class. It inherits from another class.
 # For now, think of a class as a container for functions that
 # work together for a common purpose. In this case, that
@@ -108,6 +107,10 @@ class HandleRequests(BaseHTTPRequestHandler):
                 response = get_customers_by_email(value)
             elif key == "location_id" and resource == "animals":
                 response = get_animals_by_location(value)
+            elif key == "location_id" and resource == "employees":
+                response = get_employees_by_location(value)
+            elif key == "status" and resource == "animals":
+                response = get_animals_by_status(value)
 
         self.wfile.write(response.encode())
 
